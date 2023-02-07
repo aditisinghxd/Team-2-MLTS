@@ -1,9 +1,11 @@
 import csv
+import pathlib
 
 
 def read_taxi():
+    path = str(pathlib.Path(__file__).parent)
     data_list = []
-    with open("taxi.csv", newline="") as data_file:
+    with open(f"{path}\\taxi.csv", newline="") as data_file:
         reader = csv.reader(data_file)
         for row in reader:
             data_list.append(row)
@@ -11,8 +13,9 @@ def read_taxi():
 
 
 def read_wind():
+    path = str(pathlib.Path(__file__).parent)
     data_list = []
-    with open("wind.csv", newline="") as data_file:
+    with open(f"{path}\\wind.csv", newline="") as data_file:
         reader = csv.reader(data_file)
         for row in reader:
             data_list.append(row)

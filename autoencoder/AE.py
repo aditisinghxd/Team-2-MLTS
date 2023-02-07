@@ -137,7 +137,7 @@ class AE(Model):
         shape_before_flatten = self.build_encoder(input_shape)
         self.build_decoder(shape_before_flatten)
         self.build([None, *input_shape])
-
+    """
     def train_step(self, data):
         with tf.GradientTape() as tape:
             latent = self.encode(data)
@@ -152,7 +152,7 @@ class AE(Model):
 
     def compute_loss(self, true, prediction):
         return self.loss_func(true, prediction)
-
+    """
     def encode(self, inputs):
         """Returns the encoder output, including the relevant from sampling for analysis purposes
         [Batch_size, encoding, ...]

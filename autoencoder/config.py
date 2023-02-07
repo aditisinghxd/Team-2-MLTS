@@ -11,7 +11,7 @@ class Config:
     def __init__(self):
         # Define mode and dataset
         self.mode = False
-        self.dataset = "zeros"
+        self.dataset = "taxi"
         self.num_epochs = 5
 
         # Define Model parameters
