@@ -10,18 +10,14 @@ from tensorflow.keras.layers import (
     Conv2D,
     Reshape,
     Conv2DTranspose)
-import priors
 import numpy as np
 
 
-class VAE(Model):
+class AE(Model):
     def __init__(self, config, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.num_epochs = config.num_epochs
 
-        self.prior_config = config.prior
-        self.prior = priors.non_VAE()
-        self.build_prior()
         self.latent_dim = config.latent_dim
 
         self.encoder_config = config.encoder
@@ -29,6 +25,8 @@ class VAE(Model):
 
         self.decoder_config = config.decoder
         self.decoder = Model()
+
+        self.loss_func = tf.keras.losses.MeanSquaredError()
 
     def build_encoder(self, input_shape):
         """THE ENCODER"""
@@ -64,13 +62,9 @@ class VAE(Model):
 
                 layer_counter += 1
 
-        """Sampling"""
-        before_latent = self.prior.sampling_layer(inputs=x, dims=self.latent_dim)
-        latent = self.prior(before_latent)
-
         # Encoder Model
         self.encoder = Model(
-            encoder_input, [latent, before_latent], name="encoder"
+            encoder_input, x, name="encoder"
         )
 
         return shape_before_flatten
@@ -128,29 +122,25 @@ class VAE(Model):
         shape_before_flatten = self.build_encoder(input_shape)
         self.build_decoder(shape_before_flatten)
 
-    def build_prior(self):
-        if self.prior_config == "Gaussian":
-            self.prior = priors.Gaussian()
-        else:
-            self.prior = priors.non_VAE()
-
     def train_step(self, data):
         with tf.GradientTape() as tape:
-            latent, *latent_args = self.encode(data)
+            latent = self.encode(data)
 
             reconstruction = self.decode(latent)
 
-            loss = self.prior.compute_loss(data, reconstruction, latent, latent_args)
+            loss = self.compute_loss(data, reconstruction)
         gradients = tape.gradient(loss, self.trainable_variables)
         self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
 
-        return{"loss": loss}
+        return {"loss": loss}
+
+    def compute_loss(self, true, prediction):
+        return self.loss_func(true, prediction)
 
     def encode(self, inputs):
         """Returns the encoder output, including the relevant from sampling for analysis purposes
         [Batch_size, encoding, ...]
         ... empty for standard autoencoder
-        ... mean and variance for gaussian distribution
         """
         return self.encoder(inputs)
 

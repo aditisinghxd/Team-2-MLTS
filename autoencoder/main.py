@@ -1,13 +1,13 @@
 import os
 from config import Config
-from VAE import VAE
+from AE import AE
 from data_loader import load
 import tensorflow as tf
 
 
 if __name__ == "__main__":
     config = Config()
-    model = VAE(config)
+    model = AE(config)
 
     train_data = load(config)
 
