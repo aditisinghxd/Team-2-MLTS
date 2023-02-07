@@ -9,6 +9,6 @@ def load(config):
 
 
 def load_all_zeros():
-    dataset = tf.data.Dataset.from_tensor_slices(tf.zeros([1000, 32, 32, 3]))
+    dataset = tf.data.Dataset.from_tensor_slices(tf.zeros([1000, 256, 1]))
     dataset = dataset.batch(100)
     return dataset

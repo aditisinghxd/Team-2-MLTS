@@ -1,15 +1,19 @@
-import keras.backend as K
 import tensorflow as tf
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import (
+
+# Workaround needed for JetBrains IDE
+# https://youtrack.jetbrains.com/issue/PY-53599/tensorflow.keras-subpackages-are-unresolved
+keras = tf.keras
+from keras.models import Model
+from keras.layers import (
     Input,
     Dense,
     Flatten,
     LeakyReLU,
     Activation,
-    Conv2D,
+    Conv1D,
     Reshape,
-    Conv2DTranspose)
+    Conv1DTranspose,
+    Dropout)
 import numpy as np
 
 
@@ -39,28 +43,33 @@ class AE(Model):
         for layer in self.encoder_config:
             if "Conv" in layer:
                 filters, kernel_size, stride = self.encoder_config[layer]
-                x = Conv2D(filters=filters,
+                x = Conv1D(filters=filters,
                            kernel_size=kernel_size,
                            strides=stride,
                            padding="same",
-                           name=str(layer_counter) + "_encoder_conv")(x)
+                           name=f"{layer_counter}_encoder_conv")(x)
                 x = LeakyReLU()(x)
+                x = Dropout(.2)(x)
 
                 layer_counter += 1
 
         # Make sure we remember shape
         # And flatten before any dense layers
-        shape_before_flatten = K.int_shape(x)[1:]
+        shape_before_flatten = x.shape[1:]
         x = Flatten()(x)
 
         # Iterate over dense layers in encoder
         for layer in self.encoder_config:
             if "Dense" in layer:
                 num_neurons = self.encoder_config[layer]
-                x = Dense(num_neurons, name=str(layer_counter) + "_encoder_dense")(x)
+                x = Dense(num_neurons, name=f"{layer_counter}_encoder_dense")(x)
                 x = LeakyReLU()(x)
+                x = Dropout(.2)(x)
 
                 layer_counter += 1
+
+        num_neurons = self.latent_dim
+        x = Dense(num_neurons, name="latent_layer")(x)
 
         # Encoder Model
         self.encoder = Model(
@@ -80,37 +89,43 @@ class AE(Model):
         for layer in self.decoder_config:
             if "Dense" in layer:
                 num_neurons = self.decoder_config[layer]
-                x = Dense(num_neurons, name=str(layer_counter) + "_decoder_dense")(x)
+                x = Dense(num_neurons, name=f"{layer_counter}_decoder_dense")(x)
                 x = LeakyReLU()(x)
+                x = Dropout(.2)(x)
 
                 layer_counter += 1
 
         # Reshape to shape before dense layers in encoder
         if x.shape[1:].ndims == 1:
             x = Dense(np.prod(shape_before_flatten))(x)
+            x = LeakyReLU()(x)
+            x = Dropout(.2)(x)
+
             x = Reshape(shape_before_flatten, name="Reshape_before_conv")(x)
 
         # Iterate over conv layers in decoder
         for layer in self.decoder_config:
             if "Conv" in layer:
                 filters, kernel_size, stride = self.decoder_config[layer]
-                x = Conv2DTranspose(filters=filters,
+                x = Conv1DTranspose(filters=filters,
                                     kernel_size=kernel_size,
                                     strides=stride,
                                     padding="same",
-                                    name=str(layer_counter) + "_decoder_conv")(x)
+                                    name=f"{layer_counter}_decoder_conv")(x)
                 x = LeakyReLU()(x)
+                x = Dropout(.2)(x)
 
                 layer_counter += 1
 
         filters, kernel_size, stride = self.decoder_config["last_layer"]
-        x = Conv2DTranspose(filters=filters,
+        x = Conv1DTranspose(filters=filters,
                             kernel_size=kernel_size,
                             strides=stride,
                             padding="same",
                             name="last_layer")(x)
 
-        decoder_output = Activation("sigmoid")(x)
+        decoder_output = x
+        # decoder_output = Activation("sigmoid")(x)
 
         # Decoder Model
         self.decoder = Model(decoder_input, decoder_output, name="decoder")
@@ -121,6 +136,7 @@ class AE(Model):
 
         shape_before_flatten = self.build_encoder(input_shape)
         self.build_decoder(shape_before_flatten)
+        self.build([None, *input_shape])
 
     def train_step(self, data):
         with tf.GradientTape() as tape:

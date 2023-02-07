@@ -1,5 +1,10 @@
 import numpy as np
-from tensorflow.keras.optimizers import Adam
+import tensorflow as tf
+
+# Workaround needed for JetBrains IDE
+# https://youtrack.jetbrains.com/issue/PY-53599/tensorflow.keras-subpackages-are-unresolved
+keras = tf.keras
+from keras.optimizers import Adam
 
 
 class Config:
@@ -10,13 +15,11 @@ class Config:
         self.num_epochs = 5
 
         # Define Model parameters
-        # Priors: "Gaussian",
-        self.prior = "Gaussian"
         self.optimizer = Adam()
-        self.encoder = {"Conv": [5, 3, 2],
+        self.encoder = {"Conv": [5, 7, 2],
                         "Dense": 20}
         self.latent_dim = 1
 
         # Last layer must be treated carefully
         self.decoder = {"Dense": 20,
-                        "last_layer": [3, 3, 2]}
+                        "last_layer": [1, 7, 2]}

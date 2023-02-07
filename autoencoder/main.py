@@ -1,7 +1,7 @@
 import os
 from config import Config
 from AE import AE
-from data_loader import load
+from AE_data_loader import load
 import tensorflow as tf
 
 
@@ -11,8 +11,9 @@ if __name__ == "__main__":
 
     train_data = load(config)
 
-    model.my_build([32, 32, 3])
-    model.build([None, 32, 32, 3])
+    input_shape = train_data.element_spec.shape[1:]
+
+    model.my_build(input_shape)
     model.compile(optimizer=config.optimizer, run_eagerly=True)
 
     model.fit(x=train_data, epochs=100)
