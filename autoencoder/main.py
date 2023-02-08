@@ -18,11 +18,10 @@ if __name__ == "__main__":
 
     history = model.fit(x=train_data,
                         y=train_data,
-                        epochs=1000,
-                        batch_size=100,
+                        epochs=config.num_epochs,
                         validation_data=(valid_data, valid_data),
                         callbacks=[
-                            tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, mode="min")
+                            tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=10, mode="min")
                         ],
                         )
     plt.plot(history.history["loss"], label="Training Loss")
