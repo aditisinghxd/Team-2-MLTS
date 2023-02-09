@@ -164,4 +164,4 @@ class AE(Model):
         return self.decoder(latent_inputs)
 
     def call(self, inputs, training=None, mask=None):
-        return self.decode(self.encode(inputs)[:1])
+        return self.decode(self.encode(inputs))
