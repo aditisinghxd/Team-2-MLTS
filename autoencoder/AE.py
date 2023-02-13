@@ -13,7 +13,8 @@ from keras.layers import (
     Conv1D,
     Reshape,
     Conv1DTranspose,
-    Dropout)
+    Dropout,
+    GaussianNoise)
 import numpy as np
 
 
@@ -35,7 +36,8 @@ class AE(Model):
     def build_encoder(self, input_shape):
         """THE ENCODER"""
         encoder_input = Input(shape=input_shape, name="encoder_input")
-        x = encoder_input
+        x = GaussianNoise(stddev=0.03)(encoder_input)
+        # x = encoder_input
 
         layer_counter = 0
 
@@ -124,8 +126,8 @@ class AE(Model):
                             padding="same",
                             name="last_layer")(x)
 
-        decoder_output = x
-        # decoder_output = Activation("sigmoid")(x)
+        # decoder_output = x
+        decoder_output = Activation("sigmoid")(x)
 
         # Decoder Model
         self.decoder = Model(decoder_input, decoder_output, name="decoder")

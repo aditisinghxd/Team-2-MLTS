@@ -16,13 +16,15 @@ class Config:
 
         # Define Model parameters
         self.optimizer = Adam()
-        self.encoder = {"Conv_1": [8, 7, 1],
-                        "Conv_2": [16, 5, 1],
-                        "Dense": 512}
+        self.encoder = {"Conv_1": [4, 3, 1],
+                        "Conv_2": [8, 3, 1],
+                        "Conv_3": [16, 3, 1],
+                        "Dense_encoder": 128}
 
         self.latent_dim = 20
 
         # Last layer must be treated carefully
-        self.decoder = {"Dense": 512,
-                        "DeConv": [8, 5, 1],
-                        "last_layer": [1, 7, 1]}
+        self.decoder = {"Dense_decoder": 128,
+                        "DeConv_3": [8, 3, 1],
+                        "DeConv_2": [4, 3, 1],
+                        "last_layer": [1, 3, 1]}
