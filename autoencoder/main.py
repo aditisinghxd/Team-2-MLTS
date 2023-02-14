@@ -28,6 +28,8 @@ def plot_true_and_prediction(trained_model, true_data):
         end = start + 336
         plt.plot(full_ground_truth[start:end], label="Ground Truth")
         plt.plot(full_prediction[start:end], label="Prediction")
+        for day_start in [48, 2*48, 3*48, 4*48, 5*48, 6*48]:
+            plt.axvline(x=day_start, color='r')
         plt.legend()
         plt.title("Plot for one whole week")
         plt.show()
@@ -74,7 +76,7 @@ def find_anomalies(trained_model, data, threshold, dates):
 
         plt.plot(time_values, full_ground_truth[start:end])
         plt.plot(anomaly_time, full_ground_truth[index * 48:(index+1)*48], color="r")
-        plt.xlabel(f"Anomaly on date: {dates[(index - 1) * 48]}")
+        plt.xlabel(f"Anomaly on date: {dates[index * 48]}")
 
         plt.show()
 
