@@ -39,6 +39,7 @@ def load_taxi():
     taxi_values = (taxi_values - np.min(taxi_values))/(np.max(taxi_values)-np.min(taxi_values))
 
     taxi_batched = np.split(taxi_values, 215)
+    unshuffled_data = taxi_batched.copy()
     np.random.shuffle(taxi_batched)
 
     num_train_data = int(len(taxi_batched) * 0.7)
@@ -50,7 +51,7 @@ def load_taxi():
 
     taxi_test = taxi_valid[num_valid_data:]
     taxi_valid = taxi_valid[:num_valid_data]
-    return taxi_train, taxi_valid, taxi_test, tf.constant(taxi_batched), dates
+    return taxi_train, taxi_valid, taxi_test, tf.constant(unshuffled_data), dates
 
 
 def load_wind():
