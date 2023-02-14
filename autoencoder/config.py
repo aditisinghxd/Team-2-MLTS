@@ -21,7 +21,7 @@ class Config:
                         "Conv_3": [16, 3, 1],
                         "Dense_encoder": 128}
 
-        self.latent_dim = 20
+        self.latent_dim = 1
 
         # Last layer must be treated carefully
         self.decoder = {"Dense_decoder": 128,

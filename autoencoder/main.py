@@ -3,6 +3,7 @@ from config import Config
 from AE import AE
 from AE_data_loader import load
 import tensorflow as tf
+import tensorflow_probability as tfp
 from matplotlib import pyplot as plt
 import numpy as np
 
@@ -32,10 +33,10 @@ def plot_true_and_prediction(trained_model, true_data):
         plt.show()
 
 
-def set_anomaly_threshold(trained_model, data):
-    prediction = trained_model(data)
-    loss = tf.reduce_mean(tf.losses.MeanAbsoluteError(reduction="none")(prediction, data), axis=1)
-    return np.max(loss)
+def set_anomaly_threshold(trained_model, training_data):
+    prediction = trained_model(training_data)
+    loss = tf.reduce_mean(tf.losses.MeanAbsoluteError(reduction="none")(prediction, training_data), axis=1)
+    return tfp.stats.quantiles(loss, 100, interpolation="linear")[-2]
 
 
 def find_anomalies(trained_model, data, threshold, dates):
