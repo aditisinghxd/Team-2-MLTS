@@ -12,7 +12,7 @@ class Config:
         # Define mode and dataset
         self.mode = False
         self.dataset = "wind"
-        self.num_epochs = 500
+        self.num_epochs = 3
 
         self.optimizer = Adam()
         if self.dataset == "taxi":
@@ -29,17 +29,22 @@ class Config:
                             "DeConv_3": [8, 3, 1],
                             "DeConv_2": [4, 3, 1],
                             "last_layer": [1, 3, 1]}
+
+            self.period_steps = 48
+
         elif self.dataset == "wind":
             # Define Model parameters
-            self.encoder = {"Conv_1": [4, 3, 1],
-                            "Conv_2": [8, 3, 1],
-                            "Conv_3": [16, 3, 1],
-                            "Dense_encoder": 128}
+            self.encoder = {"Conv_1": [16, 3, 1],
+                            "Conv_2": [32, 3, 1],
+                            "Conv_3": [64, 3, 1],
+                            "Dense_encoder": 256}
 
-            self.latent_dim = 3
+            self.latent_dim = 10
 
             # Last layer must be treated carefully
-            self.decoder = {"Dense_decoder": 128,
-                            "DeConv_3": [8, 3, 1],
-                            "DeConv_2": [4, 3, 1],
+            self.decoder = {"Dense_decoder": 256,
+                            "DeConv_3": [32, 3, 1],
+                            "DeConv_2": [16, 3, 1],
                             "last_layer": [8, 3, 1]}
+
+            self.period_steps = 28

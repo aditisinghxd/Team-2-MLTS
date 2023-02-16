@@ -6,6 +6,12 @@ import pandas as pd
 
 
 def load(config):
+    """
+    Data loading "interface" for the autoencoder
+    :param config: config with relevant information like what data set to load
+    :return: batched train, valid, test,
+             and complete unshuffled data set and dates
+    """
     data_type = config.dataset
 
     if data_type == "random":
@@ -19,6 +25,12 @@ def load(config):
 
 
 def load_taxi():
+    """
+    Receive the data set list from the csv file.
+    Doing preprocessing like normalizing and splitting the data set.
+    10320 data points are split into 215 sequences with length 48, e.g. one sequence represents one day.
+    :return: ()
+    """
     full_data = read_taxi()
     taxi_array = np.array(full_data)
     taxi_values = np.array([float(x) for x in taxi_array[1:, 2]]).reshape([10320, 1])
@@ -37,7 +49,7 @@ def load_wind():
 
     # This is not probably not optimal, but cba
     # Removing NA values in the data set and replace them by interpolation
-    nan_data_array = np.array(np.where(wind_array == "NA", float("nan"), wind_array)[1:, 1:], dtype=float)
+    nan_data_array = np.array(np.where(wind_array == "NA", float("nan"), wind_array)[1:, 1:], dtype=np.float32)
     cleaned_wind_array = np.array(pd.DataFrame(nan_data_array).interpolate())
     dates = [x[0] for x in full_data[1:]]
 
@@ -47,9 +59,9 @@ def load_wind():
     min = np.min(cleaned_wind_array, axis=0)
     normalized_wind_array = (cleaned_wind_array - min) / (max - min)
 
-    dates = dates[:-1]
-    normalized_wind_array = normalized_wind_array[:-1]
-    train, valid, test, unshuffled = train_valid_test_split(normalized_wind_array, 939)
+    dates = dates[:-22]
+    normalized_wind_array = normalized_wind_array[:-22]
+    train, valid, test, unshuffled = train_valid_test_split(normalized_wind_array, 234)
 
     return train, valid, test, unshuffled, dates
 
