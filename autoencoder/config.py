@@ -12,7 +12,7 @@ class Config:
         # Define mode and dataset
         self.mode = False
         self.dataset = "wind"
-        self.num_epochs = 3
+        self.num_epochs = 500
 
         self.optimizer = Adam()
         if self.dataset == "taxi":
