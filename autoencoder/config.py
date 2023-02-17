@@ -10,8 +10,7 @@ from keras.optimizers import Adam
 class Config:
     def __init__(self):
         # Define mode and dataset
-        self.mode = False
-        self.dataset = "wind"
+        self.dataset = "taxi"
         self.num_epochs = 500
 
         self.optimizer = Adam()
