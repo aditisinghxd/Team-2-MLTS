@@ -15,6 +15,9 @@ class Config:
         self.num_epochs = 500
 
         self.optimizer = Adam()
+
+        """ Model parameters, you can leave them as they are """
+
         if self.dataset == "taxi":
             # Define Model parameters
             self.encoder = {"Conv_1": [4, 3, 1],
@@ -30,6 +33,7 @@ class Config:
                             "DeConv_2": [4, 3, 1],
                             "last_layer": [1, 3, 1]}
 
+            # Number of data points in one sequence
             self.period_steps = 48
 
         elif self.dataset == "wind":
@@ -47,4 +51,5 @@ class Config:
                             "DeConv_2": [16, 3, 1],
                             "last_layer": [8, 3, 1]}
 
+            # Number of data points in one sequence
             self.period_steps = 28
