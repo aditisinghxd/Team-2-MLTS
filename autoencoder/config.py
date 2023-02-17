@@ -9,7 +9,8 @@ from keras.optimizers import Adam
 
 class Config:
     def __init__(self):
-        # Define mode and dataset
+        # Define dataset
+        # "taxi" and "wind" are possible values
         self.dataset = "taxi"
         self.num_epochs = 500
 
